@@ -27,7 +27,7 @@ public class NFA {
 
     // alternation of two NFAs
     // a|b: start -> ε -> a.start -> a -> a.end -> ε -> end 
-    //       -> ε -> b.start -> b -> b.end -> ε ->
+    //            -> ε -> b.start -> b -> b.end -> ε ->
     public static NFA alternate(NFA a, NFA b) {
         State start = new State();
         State end = new State();
