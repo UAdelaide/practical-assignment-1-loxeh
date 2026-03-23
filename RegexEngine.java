@@ -37,19 +37,23 @@ public class RegexEngine {
     }
 
 
-
-
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in); // Scanner wrapping System.in
 
         String regex = scanner.nextLine(); // reads regex from first line of input and returns it as a string (similar to fgets)
+        
+        ArrayList<Token> tokens = tokenise(regex);
+        Parser parser = new Parser(tokens);
+        NFA nfa = parser.parse();
+
+        Evaluator evaluator = new Evaluator(nfa);
 
         System.out.println("ready"); // print that the scanner is ready
 
         // read and evaluate input strings for any subsequent inputs 
-        while (scanner.hasNextLine()){
+        while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
-            System.out.println(input); 
+            System.out.println(evaluator.evaluate(input)); // true or false 
         }
     }
     
