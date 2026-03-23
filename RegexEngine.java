@@ -38,6 +38,24 @@ public class RegexEngine {
 
 
     public static void main(String[] args){
+
+        // check for verbose flag in running
+        boolean verbose = false;
+
+        for (String arg : args) {
+            if (arg.equals("-v")) {
+                verbose = true; 
+            }
+        }
+
+        // basic check
+        if (verbose){
+            System.out.println("Verbose = true");
+        } else {
+            System.out.println("Verbose = false");
+        }
+
+
         Scanner scanner = new Scanner(System.in); // Scanner wrapping System.in
 
         String regex = scanner.nextLine(); // reads regex from first line of input and returns it as a string (similar to fgets)
