@@ -48,13 +48,6 @@ public class RegexEngine {
             }
         }
 
-        // basic check
-        if (verbose){
-            System.out.println("Verbose = true");
-        } else {
-            System.out.println("Verbose = false");
-        }
-
 
         Scanner scanner = new Scanner(System.in); // Scanner wrapping System.in
 
@@ -66,13 +59,27 @@ public class RegexEngine {
 
         Evaluator evaluator = new Evaluator(nfa);
 
-        System.out.println("ready"); // print that the scanner is ready
+        if (verbose) {
+            VerboseEvaluator verboseEvaluator = new VerboseEvaluator(nfa);
+            verboseEvaluator.printTable();
+            System.out.println("ready"); // print that the scanner is ready
 
-        // read and evaluate input strings for any subsequent inputs 
-        while (scanner.hasNextLine()) {
-            String input = scanner.nextLine();
-            System.out.println(evaluator.evaluate(input)); // true or false 
+            // read and evaluate input strings for any subsequent inputs 
+            while (scanner.hasNextLine()) {
+                String input = scanner.nextLine();
+                System.out.println(evaluator.evaluate(input)); // true or false 
+            }
+            
+        } else {
+            System.out.println("ready"); // print that the scanner is ready
+
+            // read and evaluate input strings for any subsequent inputs 
+            while (scanner.hasNextLine()) {
+                String input = scanner.nextLine();
+                System.out.println(evaluator.evaluate(input)); // true or false 
+            }  
         }
+
     }
     
 }
