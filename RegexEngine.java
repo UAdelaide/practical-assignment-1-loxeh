@@ -36,7 +36,6 @@ public class RegexEngine {
         return tokens;
     }
 
-
     public static void main(String[] args){
 
         // check for verbose flag in running
@@ -57,20 +56,30 @@ public class RegexEngine {
         Parser parser = new Parser(tokens);
         NFA nfa = parser.parse();
 
-        Evaluator evaluator = new Evaluator(nfa);
-
         if (verbose) {
             VerboseEvaluator verboseEvaluator = new VerboseEvaluator(nfa);
             verboseEvaluator.printTable();
             System.out.println("ready"); // print that the scanner is ready
 
+            String accumulated = "";
+            System.out.println(verboseEvaluator.evaluate(accumulated));
+
             // read and evaluate input strings for any subsequent inputs 
             while (scanner.hasNextLine()) {
                 String input = scanner.nextLine();
-                System.out.println(evaluator.evaluate(input)); // true or false 
+
+                if (input.isEmpty()) {
+                    accumulated = "";
+                    System.out.println(verboseEvaluator.evaluate(accumulated));
+                } else {
+                    accumulated += input;
+                    System.out.println(verboseEvaluator.evaluate(accumulated));
+                }
+
             }
             
         } else {
+            Evaluator evaluator = new Evaluator(nfa);
             System.out.println("ready"); // print that the scanner is ready
 
             // read and evaluate input strings for any subsequent inputs 

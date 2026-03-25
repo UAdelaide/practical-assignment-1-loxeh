@@ -11,14 +11,14 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class VerboseEvaluator {
+public class VerboseEvaluator extends Evaluator { // "extends" for inheritence from Evaluator (inhereting epsiLonClosure(), stepThrough(), isAcceptingState(), evaluate())
 
-    private NFA nfa;
+    // private NFA nfa;
     private ArrayList<State> allStates; // all states in the NFA 
 
     public VerboseEvaluator(NFA nfa) {
-        this.nfa = nfa;
-        nfa.end.isAccepting = true; // final state of NFA should be accepting state 
+        super(nfa); // calls Evaluator's constructor 
+        // nfa.end.isAccepting = true; - set in Evaluator's constructor
         this.allStates = getAllStates(); // collect all states in NFA on construction
     }
 
@@ -122,5 +122,6 @@ public class VerboseEvaluator {
              System.out.println(); // if implementation is correct, other should always be empty
         }
     }
+
 
 }

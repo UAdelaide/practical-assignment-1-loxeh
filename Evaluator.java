@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class Evaluator {
 
-    private NFA nfa;
+    protected NFA nfa; // protected for inheritence by VerboseEvaluator 
 
     public Evaluator (NFA nfa) {
         this.nfa = nfa;
