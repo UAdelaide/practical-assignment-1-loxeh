@@ -20,6 +20,7 @@ public class VerboseEvaluator extends Evaluator { // "extends" for inheritence f
         super(nfa); // calls Evaluator's constructor 
         // nfa.end.isAccepting = true; - set in Evaluator's constructor
         this.allStates = getAllStates(); // collect all states in NFA on construction
+        // renumberStates(); 
     }
 
     public ArrayList<State> getAllStates() {
@@ -53,6 +54,13 @@ public class VerboseEvaluator extends Evaluator { // "extends" for inheritence f
             }
         }
 
+        // moving around accepting state and start state
+        // states.remove(nfa.start);
+        // states.add(0, nfa.start);
+
+        // states.remove(nfa.end);
+        // states.add(nfa.end);
+
         return states;
     }
 
@@ -72,6 +80,15 @@ public class VerboseEvaluator extends Evaluator { // "extends" for inheritence f
         }
         return alphabet;
     }
+
+    // construction of states is done backwards - nothing wrong with this implementation but not very easy to read
+    // this function renumbers so its a lot easier to read 
+    // private void renumberStates() {
+    //     int newId = 0;
+    //     for (State state : allStates) {
+    //         state.id = newId++;
+    //     }
+    // }
 
     // now printing the transition table as we have collected all states and alphabet 
     public void printTable() {
