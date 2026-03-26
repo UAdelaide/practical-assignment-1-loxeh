@@ -131,28 +131,28 @@ public class VerboseEvaluator extends Evaluator { // "extends" for inheritence f
 
         // print each state row
         for (State state : allStates) {
-            // print prefix and state name
+            StringBuilder row = new StringBuilder();
+            
+            // prefix and state name
             String prefix = "";
             if (state == nfa.start) prefix = ">";
             else if (state.isAccepting) prefix = "*";
             else prefix = " ";
-            System.out.printf("%-" + colWidth + "s", prefix + "q" + state.id);
+            row.append(String.format("%-" + colWidth + "s", prefix + "q" + state.id));
 
-            // print epsilon transitions
+            // epsilon transitions
             if (state.epsilonTransitions.isEmpty()) {
-
-                System.out.printf("%-" + epsWidth + "s", "");
-
+                row.append(String.format("%-" + epsWidth + "s", ""));
             } else {
                 String eps = "";
                 for (State next : state.epsilonTransitions) {
                     if (eps.length() > 0) eps += ",";
                     eps += "q" + next.id;
                 }
-                System.out.printf("%-" + epsWidth + "s", eps);
+                row.append(String.format("%-" + epsWidth + "s", eps));
             }
 
-            // print character transitions
+            // character transitions
             for (char c : alphabet) {
                 if (state.transitions.containsKey(c)) {
                     String chars = "";
@@ -160,15 +160,13 @@ public class VerboseEvaluator extends Evaluator { // "extends" for inheritence f
                         if (chars.length() > 0) chars += ",";
                         chars += "q" + next.id;
                     }
-
-                    System.out.printf("%-" + colWidth + "s", chars);
-
+                    row.append(String.format("%-" + colWidth + "s", chars));
                 } else {
-                    System.out.printf("%-" + colWidth + "s", "");
-                    
+                    row.append(String.format("%-" + colWidth + "s", ""));
                 }
             }
-            System.out.println();
+
+            System.out.println(row.toString().stripTrailing()); // trim trailing spaces
         }
     }
 

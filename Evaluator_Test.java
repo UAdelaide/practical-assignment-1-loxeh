@@ -25,11 +25,29 @@ public class Evaluator_Test {
     }
 
     @Test
+    // test that spaces are valid literals
+    public void testSpaceLiteral() {
+        Evaluator evaluator = buildEvaluator("a b");
+        assertTrue(evaluator.evaluate("a b")); // "a b" matches "a b"
+        assertFalse(evaluator.evaluate("ab")); // "ab" does not match "a b", space is required
+    }
+
+    @Test
+    // test that uppercase letters are valid literals
+    public void testUppercaseLiterals() {
+        Evaluator evaluator = buildEvaluator("ABC");
+        assertTrue(evaluator.evaluate("ABC")); // ABC matches "ABC"
+        assertFalse(evaluator.evaluate("abc")); // abc does not match "ABC", case sensitive
+    }    
+
+
+    @Test
     // test regex containing kleene star against inputs 
     public void testStar() {
         Evaluator evaluator = buildEvaluator("a*"); 
         assertTrue(evaluator.evaluate("a")); // a matches "a*"
         assertTrue(evaluator.evaluate("aa")); // aa matches "a*", accepts multiple occurences 
+        assertTrue(evaluator.evaluate("aaaaaaaaaaaaaaaaaaaaaaa")); // aaaaaaaaaaaaaaaaaaaaaaa matches "a*", accepts multiple occurences 
         assertFalse(evaluator.evaluate("b")); // b has no match within "a*"
         assertTrue(evaluator.evaluate("")); // match within "a*", accepts empty state        
     }
@@ -51,6 +69,16 @@ public class Evaluator_Test {
         assertTrue(evaluator.evaluate("a")); // a matches "a|b"
         assertTrue(evaluator.evaluate("b")); // b matches "a|b"
         assertFalse(evaluator.evaluate("c")); // c has no match within "a|b", not accepting random letters
+    }
+
+    @Test
+    // test alternation with more than two options
+    public void testMultipleAlternation() {
+        Evaluator evaluator = buildEvaluator("a|b|c");
+        assertTrue(evaluator.evaluate("a")); // a matches "a|b|c"
+        assertTrue(evaluator.evaluate("b")); // b matches "a|b|c"
+        assertTrue(evaluator.evaluate("c")); // c matches "a|b|c"
+        assertFalse(evaluator.evaluate("d")); // d does not match "a|b|c"
     }
 
     @Test 
@@ -78,5 +106,15 @@ public class Evaluator_Test {
         Evaluator evaluator = buildEvaluator("(ab)*|c+");
         assertFalse(evaluator.evaluate("abc")); // abc does not match "(ab)*|c+", consistent with example
         assertTrue(evaluator.evaluate("ccc")); // ccc does match "(ab)*|c+", consistent with example
+    }
+
+    @Test
+    // test empty string against various regex
+    public void testEmptyStringVariousRegex() {
+        assertTrue(buildEvaluator("a*").evaluate("")); // star accepts empty
+        assertTrue(buildEvaluator("(ab)*").evaluate("")); // group star accepts empty
+        assertFalse(buildEvaluator("a+").evaluate("")); // plus rejects empty
+        assertFalse(buildEvaluator("a").evaluate("")); // literal rejects empty
+        assertFalse(buildEvaluator("ab").evaluate("")); // concatenation rejects empty
     }
 }
