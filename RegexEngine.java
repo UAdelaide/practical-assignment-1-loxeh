@@ -29,8 +29,7 @@ public class RegexEngine {
                 case ')': tokens.add(new Token(Token.Type.RIGHTBRACKET));
                 break;
                 default:
-                    System.err.println("Error: invalid character '" + c + " ' in regular expression");
-                    System.exit(1);
+                    throw new RuntimeException("Error: invalid character '" + c + "' in regular expression");
             }
         }
         return tokens;
@@ -51,43 +50,49 @@ public class RegexEngine {
         Scanner scanner = new Scanner(System.in); // Scanner wrapping System.in
 
         String regex = scanner.nextLine(); // reads regex from first line of input and returns it as a string (similar to fgets)
-        
-        ArrayList<Token> tokens = tokenise(regex);
-        Parser parser = new Parser(tokens);
-        NFA nfa = parser.parse();
 
-        if (verbose) {
-            VerboseEvaluator verboseEvaluator = new VerboseEvaluator(nfa);
-            verboseEvaluator.printTable();
-            System.out.println("ready"); // print that the scanner is ready
+        try {
+            ArrayList<Token> tokens = tokenise(regex);
+            Parser parser = new Parser(tokens);
+            NFA nfa = parser.parse();
 
-            String accumulated = "";
-            System.out.println(verboseEvaluator.evaluate(accumulated));
+            if (verbose) {
+                VerboseEvaluator verboseEvaluator = new VerboseEvaluator(nfa);
+                verboseEvaluator.printTable();
+                System.out.println("ready"); // print that the scanner is ready
 
-            // read and evaluate input strings for any subsequent inputs 
-            while (scanner.hasNextLine()) {
-                String input = scanner.nextLine();
+                String accumulated = "";
+                System.out.println(verboseEvaluator.evaluate(accumulated));
 
-                if (input.isEmpty()) {
-                    accumulated = "";
-                    System.out.println(verboseEvaluator.evaluate(accumulated));
-                } else {
-                    accumulated += input;
-                    System.out.println(verboseEvaluator.evaluate(accumulated));
+                // read and evaluate input strings for any subsequent inputs 
+                while (scanner.hasNextLine()) {
+                    String input = scanner.nextLine();
+
+                    if (input.isEmpty()) {
+                        accumulated = "";
+                        System.out.println(verboseEvaluator.evaluate(accumulated));
+                    } else {
+                        accumulated += input;
+                        System.out.println(verboseEvaluator.evaluate(accumulated));
+                    }
+
                 }
+                
+            } else {
+                Evaluator evaluator = new Evaluator(nfa);
+                System.out.println("ready"); // print that the scanner is ready
 
-            }
-            
-        } else {
-            Evaluator evaluator = new Evaluator(nfa);
-            System.out.println("ready"); // print that the scanner is ready
-
-            // read and evaluate input strings for any subsequent inputs 
-            while (scanner.hasNextLine()) {
-                String input = scanner.nextLine();
-                System.out.println(evaluator.evaluate(input)); // true or false 
-            }  
+                // read and evaluate input strings for any subsequent inputs 
+                while (scanner.hasNextLine()) {
+                    String input = scanner.nextLine();
+                    System.out.println(evaluator.evaluate(input)); // true or false 
+                }  
+            }   
+        } catch (RuntimeException error) {
+            System.err.println(error.getMessage());
+            System.exit(1);
         }
+
 
     }
     

@@ -32,6 +32,7 @@ public class Parser {
             
     }
 
+
     private Token consumeCurrentToken() {
         return tokens.get(pos++); // return current token and advance by one 
     }
@@ -39,7 +40,20 @@ public class Parser {
 
     // start the descent parse
     public NFA parse() {
-        return parseAlternation(); // start with lowest precedence operator 
+
+        // check if empty regex
+        if (tokens.isEmpty()){
+            throw new RuntimeException("Error: empty regular expression");
+        }
+
+        NFA result = parseAlternation(); // start with lowest precedence operator 
+
+        // check that everything was consumed 
+        if (pos < tokens.size()) {
+            throw new RuntimeException("Error: unexpected trailing character at position " + pos);
+        }
+
+        return result; // return if checks pass
     }
 
 
@@ -48,6 +62,11 @@ public class Parser {
 
         while (currentToken() != null && currentToken().type == Token.Type.ALTERNATION) {
             consumeCurrentToken(); // consume | 
+
+            // ends with | or is followed by ) throw error
+            if (currentToken() == null || currentToken().type == Token.Type.RIGHTBRACKET) {
+                throw new RuntimeException("Error: empty alternation side");
+            }
             NFA right = parseConcatenation(); // get the right side from passConcatenation
             left = NFA.alternate(left, right);
         }
@@ -96,14 +115,23 @@ public class Parser {
 
             NFA insideBrackets = parseAlternation(); // parse everything inside and start process again
 
-            consumeCurrentToken(); // now consume ) (as everything inside has been handled) 
-
-            return insideBrackets; 
-        }else{
+            // ensure that closing bracket exists 
+            if (currentToken() == null || currentToken().type != Token.Type.RIGHTBRACKET) {
+                throw new RuntimeException("Error: expected ')'");
+            }
+        
+            consumeCurrentToken(); // now consume ) (as everything inside has been handled)
+            return insideBrackets;
+            
+        // strictly check that token type is literal 
+        }else if (token.type == Token.Type.LITERAL){
 
             consumeCurrentToken(); // must be a literal token 
             return NFA.literal(token.value); // take characeter at current token and build transition with it 
 
+        }else {
+            // now catch any unexpected tokens 
+            throw new RuntimeException("Error: unexpected token '" + token.type + "'");
         }
     }
 

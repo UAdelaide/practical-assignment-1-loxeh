@@ -15,6 +15,43 @@ public class Parser_Test {
     }
 
 
+    // testing invalid inputs 
+
+    @Test(expected = RuntimeException.class)
+    public void testEmptyRegex(){
+        parseRegex(""); // should trigger "Error: empty regular expression"
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testInvalidCharacter(){
+        parseRegex("a?b"); // should trigger "Error: invalid character '?' in regular expression"
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testDanglingStar(){
+        parseRegex("*a"); // should trigger "Error: unexpected token 'STAR'"
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testEmptyAlternation(){
+        parseRegex("a|"); // should trigger "Error: empty alternation side"
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testMissingClosingBracket(){
+        parseRegex("(a+b"); // should trigger "Error: expected ')'"
+    }
+    
+    @Test(expected = RuntimeException.class)
+    public void testUnexpectedClosingBracket(){
+        parseRegex("a)"); // should trigger "Error: unexpected trailing character at position 1"
+    }
+    
+    @Test(expected = RuntimeException.class)
+    public void testInvalidOperatorSequence() {
+        parseRegex("a|*"); // should trigger "Error: empty alternation side"
+    }
+    
     @Test 
     // testing that a single literal parses correctly 
     public void testSingleLiteral() {
@@ -217,7 +254,6 @@ public class Parser_Test {
         
         assertTrue(plusAfterC.epsilonTransitions.contains(branch2.epsilonTransitions.get(0)));
         assertTrue(plusAfterC.epsilonTransitions.get(1).epsilonTransitions.contains(nfa.end));
-        
     }
 }
 
