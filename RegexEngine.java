@@ -67,17 +67,22 @@ public class RegexEngine {
                 // read and evaluate input strings for any subsequent inputs 
                 while (scanner.hasNextLine()) {
                     String input = scanner.nextLine();
-
                     if (input.isEmpty()) {
+                        // reset accumulated string and evaluate empty string
                         accumulated = "";
                         System.out.println(verboseEvaluator.evaluate(accumulated));
-                    } else {
+
+                    } else if (input.length() == 1) {
+                        // only accept single character inputs
                         accumulated += input;
                         System.out.println(verboseEvaluator.evaluate(accumulated));
-                    }
 
+                    } else {
+                        // ignore inputs longer than one character
+                        System.err.println("Error: verbose mode only accepts single character inputs, please try again");
+                    }
                 }
-                
+                                
             } else {
                 Evaluator evaluator = new Evaluator(nfa);
                 System.out.println("ready"); // print that the scanner is ready

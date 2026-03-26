@@ -94,49 +94,81 @@ public class VerboseEvaluator extends Evaluator { // "extends" for inheritence f
     public void printTable() {
         ArrayList<Character> alphabet = getAlphabet();
 
-        System.out.print("    epsilon ");
-        for (char c : alphabet) {
-            System.out.print(c + "   ");
-        }
-        System.out.println("other");
+        // find longest state name for padding
+        int maxStateWidth = 0;
 
         for (State state : allStates) {
-            if (state == nfa.start) {
-                System.out.print(">"); // start
-            } else if (state.isAccepting){
-                System.out.print("*"); // accepting 
+            int width = ("q" + state.id).length() + 1; // +1 for > or *
+            if (width > maxStateWidth) maxStateWidth = width;
+        }
+
+        int colWidth = maxStateWidth + 2;
+
+        // find longest epsilon transition string for padding
+        int maxEpsWidth = "epsilon".length();
+        for (State state : allStates) {
+
+            String eps = "";
+
+            for (State next : state.epsilonTransitions) {
+                if (eps.length() > 0) eps += ",";
+                eps += "q" + next.id;
             }
 
-            // print state name (q + id)
-            System.out.print("q" + state.id + "  ");
+            if (eps.length() > maxEpsWidth) maxEpsWidth = eps.length();
+        }
+        int epsWidth = maxEpsWidth + 2;
 
-            // print epsilon transitions 
+        // print header
+        System.out.printf("%-" + colWidth + "s", "");
+        System.out.printf("%-" + epsWidth + "s", "epsilon");
+
+        for (char c : alphabet) {
+            System.out.printf("%-" + colWidth + "s", c);
+        }
+
+        System.out.println("other");
+
+        // print each state row
+        for (State state : allStates) {
+            // print prefix and state name
+            String prefix = "";
+            if (state == nfa.start) prefix = ">";
+            else if (state.isAccepting) prefix = "*";
+            else prefix = " ";
+            System.out.printf("%-" + colWidth + "s", prefix + "q" + state.id);
+
+            // print epsilon transitions
             if (state.epsilonTransitions.isEmpty()) {
-                System.out.print("       ");
+
+                System.out.printf("%-" + epsWidth + "s", "");
 
             } else {
-                String epsilonStates = "";
-
-                for (State nextState : state.epsilonTransitions) {
-                    if (epsilonStates.length() > 0) {
-                        epsilonStates += ",";
-                    }
-                    epsilonStates += "q" + nextState.id;
+                String eps = "";
+                for (State next : state.epsilonTransitions) {
+                    if (eps.length() > 0) eps += ",";
+                    eps += "q" + next.id;
                 }
-                System.out.print(epsilonStates + " ");
+                System.out.printf("%-" + epsWidth + "s", eps);
             }
 
+            // print character transitions
             for (char c : alphabet) {
                 if (state.transitions.containsKey(c)) {
-                    for (State nextState : state.transitions.get(c)) {
-                        System.out.print("q" + nextState.id + " ");
+                    String chars = "";
+                    for (State next : state.transitions.get(c)) {
+                        if (chars.length() > 0) chars += ",";
+                        chars += "q" + next.id;
                     }
-                } else {
-                    System.out.print("     ");
-                }
-             }
 
-             System.out.println(); // if implementation is correct, other should always be empty
+                    System.out.printf("%-" + colWidth + "s", chars);
+
+                } else {
+                    System.out.printf("%-" + colWidth + "s", "");
+                    
+                }
+            }
+            System.out.println();
         }
     }
 
