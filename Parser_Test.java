@@ -310,5 +310,97 @@ public class Parser_Test {
         assertFalse(nfa.start.transitions.containsKey('a'));
         assertTrue(nfa.start.epsilonTransitions.size() > 0);
     }
+
+
+    @Test
+    // test that a regex with only a star operator on a group parses correctly
+    public void testGroupStar() {
+        NFA nfa = parseRegex("(a)*");
+        // start should epsilon to end (zero matches)
+        assertTrue(nfa.start.epsilonTransitions.contains(nfa.end));
+    }
+
+    @Test
+    // test that a regex with only a plus operator on a group parses correctly
+    public void testGroupPlus() {
+        NFA nfa = parseRegex("(a)+");
+        // start should NOT epsilon to end (must match at least once)
+        assertFalse(nfa.start.epsilonTransitions.contains(nfa.end));
+    }
+
+    @Test
+    // test that alternation inside brackets parses correctly
+    public void testAlternationInsideBrackets() {
+        NFA nfa = parseRegex("(a|b)");
+        // start should have two epsilon transitions (alternation)
+        assertEquals(2, nfa.start.epsilonTransitions.size());
+    }
+
+    @Test
+    // test that alternation inside brackets with star parses correctly
+    public void testAlternationInsideBracketsWithStar() {
+        NFA nfa = parseRegex("(a|b)*");
+        // start should epsilon to end (zero matches)
+        assertTrue(nfa.start.epsilonTransitions.contains(nfa.end));
+    }
+
+    @Test
+    // test that alternation inside brackets with plus parses correctly
+    public void testAlternationInsideBracketsWithPlus() {
+        NFA nfa = parseRegex("(a|b)+");
+        // start should NOT epsilon to end (must match at least once)
+        assertFalse(nfa.start.epsilonTransitions.contains(nfa.end));
+    }
+
+    @Test
+    // test that a long concatenation parses correctly
+    public void testLongConcatenation() {
+        NFA nfa = parseRegex("abcde");
+        assertNotNull(nfa.start);
+        assertNotNull(nfa.end);
+        assertTrue(nfa.start.transitions.containsKey('a'));
+    }
+
+    @Test
+    // test that multiple alternations parse correctly
+    public void testMultipleAlternations() {
+        NFA nfa = parseRegex("a|b|c|d");
+        assertNotNull(nfa.start);
+        assertNotNull(nfa.end);
+        assertEquals(2, nfa.start.epsilonTransitions.size());
+    }
+
+    @Test
+    // test that concatenation of alternations parses correctly
+    public void testConcatenationOfAlternations() {
+        NFA nfa = parseRegex("(a|b)(c|d)");
+        assertNotNull(nfa.start);
+        assertNotNull(nfa.end);
+        // top level should be concatenation not alternation
+        assertEquals(2, nfa.start.epsilonTransitions.size());
+    }
+
+    @Test
+    // test that star followed by plus parses correctly
+    public void testStarFollowedByPlus() {
+        NFA nfa = parseRegex("a*b+");
+        assertNotNull(nfa.start);
+        assertNotNull(nfa.end);
+        // start should epsilon into star fragment
+        assertFalse(nfa.start.transitions.containsKey('a'));
+        assertTrue(nfa.start.epsilonTransitions.size() > 0);
+    }
+
+    @Test
+    // test that plus followed by star parses correctly
+    public void testPlusFollowedByStar() {
+        NFA nfa = parseRegex("a+b*");
+        assertNotNull(nfa.start);
+        assertNotNull(nfa.end);
+        // start should epsilon into plus fragment
+        assertFalse(nfa.start.transitions.containsKey('a'));
+        assertTrue(nfa.start.epsilonTransitions.size() > 0);
+    }
+
 }
 
