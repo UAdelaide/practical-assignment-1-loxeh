@@ -81,4 +81,43 @@ public class NFA_Test {
 
     }
 
+    @Test
+    // test that concatenation of three literals works correctly
+    public void testTripleConcatenation() {
+        NFA a = NFA.literal('a');
+        NFA b = NFA.literal('b');
+        NFA c = NFA.literal('c');
+        NFA ab = NFA.concatenate(a, b);
+        NFA abc = NFA.concatenate(ab, c);
+        assertNotNull(abc.start);
+        assertNotNull(abc.end);
+        assertTrue(abc.start.transitions.containsKey('a'));
+    }
+
+    @Test
+    // test that alternation of three literals works correctly
+    public void testTripleAlternation() {
+        NFA a = NFA.literal('a');
+        NFA b = NFA.literal('b');
+        NFA c = NFA.literal('c');
+        NFA ab = NFA.alternate(a, b);
+        NFA abc = NFA.alternate(ab, c);
+        assertNotNull(abc.start);
+        assertNotNull(abc.end);
+        assertEquals(2, abc.start.epsilonTransitions.size());
+    }
+
+    @Test
+    // test that star of a group works correctly
+    public void testStarOfGroup() {
+        NFA a = NFA.literal('a');
+        NFA b = NFA.literal('b');
+        NFA ab = NFA.concatenate(a, b);
+        NFA starred = NFA.kleeneStar(ab);
+        // start should epsilon to end (zero matches)
+        assertTrue(starred.start.epsilonTransitions.contains(starred.end));
+        // start should epsilon to inner start
+        assertTrue(starred.start.epsilonTransitions.contains(ab.start));
+    }
+
 }

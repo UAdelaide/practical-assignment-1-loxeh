@@ -255,5 +255,38 @@ public class Parser_Test {
         assertTrue(plusAfterC.epsilonTransitions.contains(branch2.epsilonTransitions.get(0)));
         assertTrue(plusAfterC.epsilonTransitions.get(1).epsilonTransitions.contains(nfa.end));
     }
+
+    @Test
+    // test that a single character regex parses correctly
+    public void testSingleCharacter() {
+        NFA nfa = parseRegex("a");
+        assertTrue(nfa.start.transitions.containsKey('a'));
+    }
+
+    @Test
+    // test that alternation with star parses correctly - a*|b
+    public void testAlternationWithStar() {
+        NFA nfa = parseRegex("a*|b");
+        // top level should be alternation
+        assertEquals(2, nfa.start.epsilonTransitions.size());
+    }
+
+    @Test
+    // test that plus with concatenation parses correctly - a+b
+    public void testPlusWithConcatenation() {
+        NFA nfa = parseRegex("a+b");
+        // start should not epsilon to end (a+ must match first)
+        assertFalse(nfa.start.epsilonTransitions.contains(nfa.end));
+        assertTrue(nfa.start.epsilonTransitions.size() > 0);
+    }
+
+    @Test
+    // test that multiple brackets parse correctly
+    public void testMultipleBrackets() {
+        NFA nfa = parseRegex("(ab)(cd)");
+        assertNotNull(nfa.start);
+        assertNotNull(nfa.end);
+        assertTrue(nfa.start.transitions.containsKey('a'));
+    }
 }
 

@@ -58,7 +58,11 @@ public class RegexEngine {
 
             if (verbose) {
                 VerboseEvaluator verboseEvaluator = new VerboseEvaluator(nfa);
-                verboseEvaluator.printTable();
+
+                // verboseEvaluator.printTableComplex();
+
+                verboseEvaluator.printTableSimple();
+
                 System.out.println("ready"); // print that the scanner is ready
 
                 String accumulated = "";

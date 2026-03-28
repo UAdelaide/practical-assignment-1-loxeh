@@ -117,4 +117,63 @@ public class Evaluator_Test {
         assertFalse(buildEvaluator("a").evaluate("")); // literal rejects empty
         assertFalse(buildEvaluator("ab").evaluate("")); // concatenation rejects empty
     }
+
+
+    @Test
+    // test that numbers are valid literals in evaluation
+    public void testNumberLiterals() {
+        Evaluator evaluator = buildEvaluator("123");
+        assertTrue(evaluator.evaluate("123")); // 123 is accepted by "123"
+        assertFalse(evaluator.evaluate("124")); // 124 is not accepted by "123"
+        assertFalse(evaluator.evaluate("12")); // 12 is not accepted by "123", incomplete
+    }
+
+    @Test
+    // test that a string longer than the regex is rejected
+    public void testInputLongerThanRegex() {
+        Evaluator evaluator = buildEvaluator("ab");
+        assertFalse(evaluator.evaluate("abc")); // abc is not accepted by "ab", too long
+        assertFalse(evaluator.evaluate("abb")); // abb is not accepted by "ab", too long
+    }
+
+    @Test
+    // test alternation where both sides are groups
+    public void testAlternationBothGroups() {
+        Evaluator evaluator = buildEvaluator("(ab)|(cd)");
+        assertTrue(evaluator.evaluate("ab")); // ab is accepted by "(ab)|(cd)"
+        assertTrue(evaluator.evaluate("cd")); // cd is accepted by "(ab)|(cd)"
+        assertFalse(evaluator.evaluate("ac")); // ac is not accepted by "(ab)|(cd)"
+        assertFalse(evaluator.evaluate("abcd")); // abcd is not accepted by "(ab)|(cd)"
+    }
+
+    @Test
+    // test that plus requires at least one match for grouped expressions
+    public void testGroupPlus() {
+        Evaluator evaluator = buildEvaluator("(ab)+");
+        assertTrue(evaluator.evaluate("ab")); // ab is accepted by "(ab)+"
+        assertTrue(evaluator.evaluate("abab")); // abab is accepted by "(ab)+"
+        assertFalse(evaluator.evaluate("")); // empty is not accepted by "(ab)+"
+        assertFalse(evaluator.evaluate("a")); // a is not accepted by "(ab)+", incomplete group
+    }
+
+    @Test
+    // test complex regex with concatenation of star and plus
+    public void testStarAndPlusConcatenation() {
+        Evaluator evaluator = buildEvaluator("a*b+");
+        assertTrue(evaluator.evaluate("b")); // b is accepted, a* allows zero matches
+        assertTrue(evaluator.evaluate("ab")); // ab is accepted
+        assertTrue(evaluator.evaluate("aaabbb")); // aaabbb is accepted
+        assertFalse(evaluator.evaluate("")); // empty is not accepted, b+ requires at least one
+        assertFalse(evaluator.evaluate("a")); // a is not accepted, b+ requires at least one
+    }
+
+    @Test
+    // test complex regex with alternation and concatenation
+    public void testAlternationAndConcatenation() {
+        Evaluator evaluator = buildEvaluator("ab|cd");
+        assertTrue(evaluator.evaluate("ab")); // ab is accepted by "ab|cd"
+        assertTrue(evaluator.evaluate("cd")); // cd is accepted by "ab|cd"
+        assertFalse(evaluator.evaluate("ac")); // ac is not accepted by "ab|cd"
+        assertFalse(evaluator.evaluate("a")); // a is not accepted by "ab|cd", incomplete
+    }
 }
