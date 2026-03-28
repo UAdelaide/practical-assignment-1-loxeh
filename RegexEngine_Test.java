@@ -90,4 +90,37 @@ public class RegexEngine_Test {
         assertEquals(Token.Type.LITERAL, tokens.get(6).type);        // c
         assertEquals(Token.Type.PLUS, tokens.get(7).type);           // +
     }
+
+    @Test
+    // test that invalid character in regex throws RuntimeException
+    public void testInvalidCharacter() {
+        try {
+            RegexEngine.tokenise("a$b");
+            fail("Expected RuntimeException");
+        } catch (RuntimeException e) {
+            // expected - invalid character should throw RuntimeException
+        }
+    }
+
+    @Test
+    // test that invalid character at start throws RuntimeException
+    public void testInvalidCharacterAtStart() {
+        try {
+            RegexEngine.tokenise("$ab");
+            fail("Expected RuntimeException");
+        } catch (RuntimeException e) {
+            // expected
+        }
+    }
+
+    @Test
+    // test that invalid character at end throws RuntimeException
+    public void testInvalidCharacterAtEnd() {
+        try {
+            RegexEngine.tokenise("ab$");
+            fail("Expected RuntimeException");
+        } catch (RuntimeException e) {
+            // expected
+        }
+    }
 }

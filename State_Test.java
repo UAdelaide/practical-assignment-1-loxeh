@@ -56,4 +56,17 @@ public class State_Test {
 
         assertEquals(2, s1.transitions.get('a').size());
     }
+
+    @Test
+    // test that adding a second transition on same character adds to existing list
+    public void testAddingTransitionExistingKey() {
+        State s1 = new State();
+        State s2 = new State();
+        State s3 = new State();
+        s1.addTransition('a', s2); // first transition on 'a' - creates new list
+        s1.addTransition('a', s3); // second transition on 'a' - adds to existing list
+        assertEquals(2, s1.transitions.get('a').size()); // both states should be in list
+        assertTrue(s1.transitions.get('a').contains(s2));
+        assertTrue(s1.transitions.get('a').contains(s3));
+    }
 }

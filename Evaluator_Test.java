@@ -213,4 +213,19 @@ public class Evaluator_Test {
         assertTrue(evaluator.evaluate("a")); // a accepted
         assertTrue(evaluator.evaluate("aaa")); // aaa accepted
     }
+
+    @Test
+    // test that completely wrong input drives NFA to empty state set
+    public void testNoMatchingTransitions() {
+        Evaluator evaluator = buildEvaluator("a");
+        assertFalse(evaluator.evaluate("b")); // no transition on 'b' from start
+        assertFalse(evaluator.evaluate("ba")); // drives to empty set then tries to continue
+    }
+
+    @Test
+    // test that input drives NFA to empty state then continues
+    public void testEmptyStateSetContinuation() {
+        Evaluator evaluator = buildEvaluator("ab");
+        assertFalse(evaluator.evaluate("ba")); // b drives to empty set, a has nowhere to go
+    }
 }
