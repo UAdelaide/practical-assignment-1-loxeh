@@ -120,4 +120,37 @@ public class NFA_Test {
         assertTrue(starred.start.epsilonTransitions.contains(ab.start));
     }
 
+    @Test
+    // test that literal NFA has exactly one character transition
+    public void testLiteralOneTransition() {
+        NFA nfa = NFA.literal('a');
+        assertEquals(1, nfa.start.transitions.size()); // only one character transition
+        assertTrue(nfa.start.epsilonTransitions.isEmpty()); // no epsilon transitions
+    }
+
+    @Test
+    // test that concatenation produces no new states
+    public void testConcatenateNoNewStates() {
+        NFA a = NFA.literal('a');
+        NFA b = NFA.literal('b');
+        State aStart = a.start;
+        State bEnd = b.end;
+        NFA ab = NFA.concatenate(a, b);
+        // concatenate should reuse existing states not create new ones
+        assertEquals(aStart, ab.start);
+        assertEquals(bEnd, ab.end);
+    }
+
+    @Test
+    // test that alternate produces two new states
+    public void testAlternateNewStates() {
+        NFA a = NFA.literal('a');
+        NFA b = NFA.literal('b');
+        State aStart = a.start;
+        State bEnd = b.end;
+        NFA alt = NFA.alternate(a, b);
+        // alternate should create new start and end states
+        assertNotEquals(aStart, alt.start);
+        assertNotEquals(bEnd, alt.end);
+    }
 }

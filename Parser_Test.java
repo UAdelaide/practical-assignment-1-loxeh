@@ -288,5 +288,27 @@ public class Parser_Test {
         assertNotNull(nfa.end);
         assertTrue(nfa.start.transitions.containsKey('a'));
     }
+
+    @Test
+    // test that a+|b+ parses correctly - plus binds tighter than alternation
+    public void testPlusPrecedenceOverAlternation() {
+        NFA nfa = parseRegex("a+|b+");
+        // top level should be alternation
+        assertEquals(2, nfa.start.epsilonTransitions.size());
+        // neither branch should skip to end (both are plus)
+        State branch1 = nfa.start.epsilonTransitions.get(0);
+        State branch2 = nfa.start.epsilonTransitions.get(1);
+        assertFalse(branch1.epsilonTransitions.contains(nfa.end));
+        assertFalse(branch2.epsilonTransitions.contains(nfa.end));
+    }
+
+    @Test
+    // test that a*b* parses correctly - both stars bind to their own literals
+    public void testMultipleStars() {
+        NFA nfa = parseRegex("a*b*");
+        // start should epsilon to star fragment (not directly to end of whole NFA)
+        assertFalse(nfa.start.transitions.containsKey('a'));
+        assertTrue(nfa.start.epsilonTransitions.size() > 0);
+    }
 }
 

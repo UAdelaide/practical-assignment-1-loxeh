@@ -176,4 +176,41 @@ public class Evaluator_Test {
         assertFalse(evaluator.evaluate("ac")); // ac is not accepted by "ab|cd"
         assertFalse(evaluator.evaluate("a")); // a is not accepted by "ab|cd", incomplete
     }
+
+    @Test
+    // test that a single digit is accepted by a digit regex
+    public void testSingleDigit() {
+        Evaluator evaluator = buildEvaluator("1");
+        assertTrue(evaluator.evaluate("1")); // 1 is accepted by "1"
+        assertFalse(evaluator.evaluate("2")); // 2 is not accepted by "1"
+    }
+
+    @Test
+    // test that mixed alphanumeric regex works correctly
+    public void testAlphanumeric() {
+        Evaluator evaluator = buildEvaluator("a1b2");
+        assertTrue(evaluator.evaluate("a1b2")); // exact match
+        assertFalse(evaluator.evaluate("a1b")); // incomplete
+        assertFalse(evaluator.evaluate("a1b3")); // wrong digit
+    }
+
+    @Test
+    // test that alternation of star and plus works correctly
+    public void testAlternationStarPlus() {
+        Evaluator evaluator = buildEvaluator("a*|b+");
+        assertTrue(evaluator.evaluate("")); // empty accepted by a*
+        assertTrue(evaluator.evaluate("a")); // a accepted by a*
+        assertTrue(evaluator.evaluate("b")); // b accepted by b+
+        assertTrue(evaluator.evaluate("bbb")); // bbb accepted by b+
+        assertFalse(evaluator.evaluate("ab")); // ab not accepted by either branch
+    }
+
+    @Test
+    // test that nested star works correctly - (a*)* 
+    public void testNestedStar() {
+        Evaluator evaluator = buildEvaluator("(a*)*");
+        assertTrue(evaluator.evaluate("")); // empty accepted
+        assertTrue(evaluator.evaluate("a")); // a accepted
+        assertTrue(evaluator.evaluate("aaa")); // aaa accepted
+    }
 }

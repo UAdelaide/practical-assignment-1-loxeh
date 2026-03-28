@@ -136,5 +136,37 @@ public class VerboseEvaluator_Test {
         // abc should not match
         assertFalse(verboseEvaluator.evaluate("abc"));
     }
+
+    @Test
+    // test that all states are reachable from start state
+    public void testAllStatesReachable() {
+        VerboseEvaluator ve = buildVerboseEvaluator("a|b");
+        ArrayList<State> states = ve.getAllStates();
+        // every state should be reachable - getAllStates traverses from start
+        assertTrue(states.contains(ve.nfa.start));
+        assertTrue(states.contains(ve.nfa.end));
+        // should have more than just start and end
+        assertTrue(states.size() > 2);
+    }
+
+    @Test
+    // test that getAlphabet works for alternation regex
+    public void testGetAlphabetAlternation() {
+        VerboseEvaluator ve = buildVerboseEvaluator("a|b");
+        ArrayList<Character> alphabet = ve.getAlphabet();
+        assertTrue(alphabet.contains('a'));
+        assertTrue(alphabet.contains('b'));
+        assertEquals(2, alphabet.size());
+    }
+
+    @Test
+    // test that getAlphabet works for regex with repeated characters
+    public void testGetAlphabetRepeated() {
+        VerboseEvaluator ve = buildVerboseEvaluator("a+|a*");
+        ArrayList<Character> alphabet = ve.getAlphabet();
+        assertTrue(alphabet.contains('a'));
+        assertEquals(1, alphabet.size()); // only one unique character
+    }
+    
 }
 
